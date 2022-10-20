@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Meta -->
+	<meta charset="utf-8">
+	<title>Mapplic - Custom Interactive Map Plugin - Mall Example</title>
+
+	<!-- Viewport for Responsivity -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+	<meta name="description" content="Map of a shopping mall, an example of using Mapplic, a premium custom interactive map plugin to display custom image or vector (SVG) maps. Touchscreen kiosk map compatible.">
+
+	<!-- Stylesheets -->
+	<link href='http://fonts.googleapis.com/css?family=Maven+Pro:400,700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link rel="stylesheet" type="text/css" href="css/map.css">
+	<link rel="stylesheet" type="text/css" href="mapplic/mapplic.css">
+	<link rel="stylesheet" type="text/css" href="mapplic-routes/css/mapplic-routes.css">
+	<!-- Internet Explorer -->
+		<!--[if lt IE 9]>
+			<link rel="stylesheet" type="text/css" href="mapplic/mapplic-ie.css">
+			<script type="text/javascript" src="js/html5shiv.js"></script>
+		<![endif]-->
+		</head>
+		<body>
+			<div id="wrap">
+
+				<!-- Site header -->
+				<header id="header">
+				</header>
+
+				<!-- Site content -->
+				<div id="content">
+					
+					<section id="map-section" class="inner over">
+						<div class="editor-window">
+							<div class="window-mockup brown"></div>
+							<div class="editor-body">
+						</div>
+					</div>
+
+					<!-- Map -->
+					<div class="map-container">
+						<div class="window-mockup">
+							<div class="window-bar"></div>
+						</div>
+						<div id="mapplic" class="mapplic-routes"></div>
+					</div>
+
+				</section>
+			</div>
+		</div>
+
+		<!-- Scripts -->
+		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="js/jquery.mousewheel.js"></script>
+		<script type="text/javascript" src="js/script.js"></script>
+		<script type="text/javascript" src="js/magnific-popup.js"></script>
+		<script type="text/javascript" src="mapplic/mapplic.js"></script>
+		<script type="text/javascript" src="mapplic-routes/js/mapplic-routes.js"></script>
+
+<script type="text/javascript">
+			$(document).ready(function() {
+				var mapplic = $('#mapplic').mapplic({
+					source: 'mall-routes.json',
+					height: 520,
+					sidebar: true,
+					thumbholder: true,
+					maxscale: 3,
+					routes: {
+						accessible: true,
+						opened: true,
+						linecolor: 'rgba(242,53,67,0.6)',
+						linewidth: 2,
+						speed: 0.9
+					}
+				});
+			});
+		</script>
+
+	</body>
+	</html>

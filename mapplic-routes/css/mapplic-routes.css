@@ -1,0 +1,322 @@
+/* Routes */
+.mapplic-element svg [id^=route] {
+	display: none;
+}
+
+.mapplic-element svg [id^=route] > * {
+	opacity: 0.3;
+}
+
+.loc-to,
+.loc-from {
+	padding: 4px 6px;
+	border: 1px solid #ddd;
+	border-radius: 2px;
+	margin-right: 10px;
+}
+
+.mapplic-routes-panel {
+	background-color: #fff;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+	box-sizing: border-box;
+	color: #2f3434;
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 12px;
+	transition: width 0.2s, height 0.2s;
+	padding-bottom: 40px;
+	width: 240px;
+	height: 120px;
+}
+
+.mapplic-routes-panel.mapplic-closed {
+	width: 28px;
+	height: 28px;
+	padding: 0;
+}
+
+.mapplic-routes-panel.mapplic-closed > *:not(.mapplic-routes-submit) {
+	display: none;
+}
+
+.mapplic-routes-panel.mapplic-closed .mapplic-routes-submit {
+	background-size: 16px 16px !important;
+	margin: 0;
+}
+
+.mapplic-routes-panel small {
+	border: 2px solid #231f20;
+	box-sizing: border-box;
+	width: 8px;
+	height: 8px;
+	margin-top: 8px;
+	border-radius: 50% 50% 50% 0;
+	transform: rotate(-45deg);
+	float: left;
+	display: block;
+}
+
+.mapplic-routes-select:first-child small {
+	border-radius: 50%;
+	transform: rotate(0deg);
+}
+
+.mapplic-routes-select.filled small {
+	background-color: #231F20;
+	transition: background-color 0.2s;
+}
+
+.mapplic-routes-select.filled:hover:not(.fixed) small {
+	background-color: transparent;
+	border-radius: 50%;
+	transform: none;
+	border: none;
+}
+
+.mapplic-routes-select.filled:hover:not(.fixed) small:after {
+	font-size: 15px;
+	font-weight: bold;
+	line-height: 8px;
+	content: '\d7';
+}
+
+.mapplic-routes-select.filled.fixed .mapplic-routes-loc { color: #888; }
+.mapplic-routes-select.filled.fixed small {
+	background-color: #888;
+	border-color: #888;
+}
+
+.mapplic-routes-close {
+	color: #888;
+	cursor: pointer;
+	font-size: 13px;
+	position: absolute;
+	bottom: 8px;
+	left: 15px;
+	transition: color 0.2s;
+}
+
+.mapplic-routes-close:hover { color: #2f3434; }
+
+.mapplic-routes-select {
+	border-left: 3px solid transparent;
+	box-sizing: border-box;
+	cursor: pointer;
+	display: block;
+	padding: 8px 12px;
+	height: 40px;
+	min-width: 240px;
+	transition: border-color 0.2s;
+}
+
+.mapplic-routes-select.active {
+	border-color: #6CB5F4;
+	background-color: #fafafa;
+}
+
+.mapplic-routes-select.active small {
+	color: #2f3434;
+}
+
+/* Placeholder text*/
+.mapplic-routes-select span {
+	color: #ccc;
+	font-size: 14px;
+	font-style: italic;
+	line-height: 26px;
+	padding-left: 10px;
+	
+	-webkit-user-select: none; 
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.mapplic-routes-select.filled span {
+	display: none;
+}
+
+/* Location holder */
+.mapplic-routes-loc {
+	font-size: 16px;
+	line-height: 26px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	padding-left: 10px;
+	overflow: hidden;
+}
+
+.mapplic-routes-dots {
+	width: 4px;
+	height: 28px;
+	left: 19px;
+	margin-top: -14px;
+	margin-left: -2px;
+	position: absolute;
+	pointer-events: none;
+}
+
+.mapplic-routes-dots > span {
+	background-color: #ccc;
+	display: block;
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	margin: 4px 0;
+}
+
+.mapplic-routes-swap {
+	background-image: url(../img/swap.svg);
+	background-size: 16px 16px;
+	background-repeat: no-repeat;
+	background-position: center;
+	border-radius: 3px;
+	cursor: pointer;
+	opacity: 0;
+	width: 24px;
+	height: 24px;
+	margin-top: -12px;
+	margin-left: -12px;
+	position: absolute;
+	right: 10px;
+	transition: transform 0.2s, opacity 0.2s;
+}
+
+.mapplic-routes-swap.rotate {
+	transform: rotate(180deg);
+}
+
+.mapplic-routes-panel:hover .mapplic-routes-swap {
+	opacity: 0.3;
+}
+
+.mapplic-routes-swap:hover {
+	opacity: 1 !important;
+}
+
+
+.mapplic-routes-submit {
+	background: transparent url(../img/direction-icon.svg) no-repeat center !important;
+	background-size: 24px 24px !important;
+	border: none;
+	border-radius: 0;
+	color: #fff;
+	display: inline-block;
+	width: 28px;
+	height: 28px;
+	position: absolute;
+	right: 0;
+	margin: 6px;
+	bottom: 0;
+	padding: 0 !important;
+	opacity: 0.8;
+	transition: opacity 0.2s;
+}
+
+.mapplic-routes-submit:hover {
+	opacity: 1;
+}
+
+.mapplic-routes-submit:focus {
+	outline: none;
+}
+
+/* Route path */
+.mapplic-routes-path {
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	fill: none;
+	display: block;
+}
+
+/* Button */
+.mapplic-routes-button {
+	background-image: url(../img/direction-icon.svg);
+	background-size: 16px 16px;
+	bottom: 0;
+	right: 0;
+	display: none;
+}
+
+/* Icons */
+.mapplic-routes .mapplic-list-location {
+	position: relative;
+	overflow: hidden;
+}
+
+.mapplic-routes-icon {
+	background: url(../img/direction-arrow.svg) no-repeat center;
+	cursor: pointer;
+	width: 20px;
+	height: 20px;
+	opacity: 0.6;
+}
+
+.mapplic-routes-icon:hover {
+	opacity: 1;
+}
+
+.mapplic-routes .mapplic-list-location .mapplic-routes-icon {
+	position: absolute;
+	top: 12px;
+	right: -30px;
+	transition: right 0.2s, opacity 0.2s;
+}
+
+.mapplic-routes .mapplic-list-location:hover .mapplic-routes-icon {
+	right: 10px;
+}
+
+/* Accessible */
+.mapplic-routes .mapplic-routes-wheelchair {
+	background-color: transparent;
+	background-image: url(../img/wheelchair.svg);
+	background-repeat: no-repeat;
+	background-position: center;
+	border-radius: 5px;
+	border: none;
+	position: absolute;
+	opacity: 0.4;
+	padding: 0;
+	width: 26px;
+	height: 26px;
+	right: 40px;
+	bottom: 7px;
+	transition: opacity 0.2s, background-color 0.2s;
+}
+
+.mapplic-routes .mapplic-routes-wheelchair:focus { outline: none; }
+
+.mapplic-routes .mapplic-routes-wheelchair.enabled {
+	background-color: #e4e4e4;
+	opacity: 0.9;
+}
+
+/* Mobile */
+@media all and (max-width: 667px) {
+	.mapplic-routes-panel {
+		top: auto !important;
+		bottom: 0;
+	}
+
+	.mapplic-legend {
+		bottom: auto !important;
+		top: 0;
+	}
+}
+
+/* Map */
+.mapplic-routes .mapplic-clickable {
+	opacity: 1 !important;
+}
+
+.mapplic-routes .mapplic-active {
+	fill: #f8f8f8;
+}
+
+.mapplic-routes g[id^=landmarks-large] .mapplic-active {
+	fill: #555;
+}
+
+.mapplic-filtered svg [id^=landmark] > * { opacity: 1 !important; }
