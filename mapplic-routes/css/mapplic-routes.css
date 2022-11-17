@@ -30,6 +30,43 @@
 	height: 120px;
 }
 
+.mapplic-routes-details-panel{
+	background-color: #fff;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+	box-sizing: border-box;
+	color: #2f3434;
+	position: absolute;
+	top: 108px;
+	left: 0;
+	margin: 0;
+	transition: width 0.2s, height 0.2s;
+	padding-bottom: 40px;
+	width: 240px;
+	height: 120px;
+
+}
+
+.way-details-text {
+	border-left: 3px solid transparent;
+	box-sizing: border-box;
+	cursor: pointer;
+	display: block;
+	padding: 8px 12px;
+	height: 100px;
+	min-width: 240px;
+	transition: border-color 0.2s;
+	overflow: auto;
+	overflow-x: hidden;
+}
+
+.way-details-text span {
+	color: rgb(13, 8, 8);
+	font-size: 12px;
+	font-style: normal;
+	line-height: 23px;
+	padding-left: 5px;
+}
+
 .mapplic-routes-panel.mapplic-closed {
 	width: 28px;
 	height: 28px;
@@ -92,8 +129,8 @@
 	cursor: pointer;
 	font-size: 13px;
 	position: absolute;
-	bottom: 8px;
-	left: 15px;
+	bottom: -102px;
+	left: 90px;
 	transition: color 0.2s;
 }
 
@@ -122,7 +159,7 @@
 /* Placeholder text*/
 .mapplic-routes-select span {
 	color: #ccc;
-	font-size: 14px;
+	font-size: 13px;
 	font-style: italic;
 	line-height: 26px;
 	padding-left: 10px;

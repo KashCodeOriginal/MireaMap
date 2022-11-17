@@ -24,6 +24,93 @@ jQuery(document).ready(function($) {
 		});
 	}
 
+	var isWayDrawning = false;
+	var FirstTimeCall = true;
+	var childs = [];
+
+	// map.on('mapready', function(e, self) {
+	// 	navigator.geolocation.getCurrentPosition(function(pos) 
+	// 	{
+	// 		var location = self.getLocationData('pos');
+	// 		location.lat = pos.coords.latitude;
+	// 		location.lng = pos.coords.longitude;
+	// 		self.updateLocation('pos');
+	// 	})
+	// });
+	
+	map.on('levelswitched', function(e, level) {
+		if(isWayDrawning){
+			switch(level)
+			{
+			case 'zero-floor':
+				if(!FirstTimeCall){
+				WayDetailsShowing("По лестнице на нулевой этаж");
+				}
+				WayDetailsShowing("Маршрут по нулевому этажу");
+				FirstTimeCall = false;
+				break;
+			case 'first-floor':
+				if(!FirstTimeCall){
+				WayDetailsShowing("По лестнице на первый этаж");
+				}
+				WayDetailsShowing("Маршрут по первому этажу");
+				FirstTimeCall = false;
+				break;
+			case 'second-floor':
+				if(!FirstTimeCall){
+				WayDetailsShowing("По лестнице на второй этаж");
+				}
+				WayDetailsShowing("Маршрут по второму этажу");
+				FirstTimeCall = false;
+				break;
+			case 'third-floor':
+				if(!FirstTimeCall){
+				WayDetailsShowing("По лестнице на третий этаж");
+				}
+				WayDetailsShowing("Маршрут по третьему этажу");
+				FirstTimeCall = false;
+				break;
+			case 'fourth-floor':
+				if(!FirstTimeCall){
+				WayDetailsShowing("По лестнице на четвертый этаж");
+				}
+				WayDetailsShowing("Маршрут по четвертому этажу");
+				FirstTimeCall = false;
+				break;
+			};
+		}
+	});
+
+	function WayDetailsShowing(text){
+		showRoute(text);
+		return text;
+	}
+
+	const showRoute = (text) =>{
+	//$(".way-details-text").append(`<button class="routeBtn")>${text}`)
+	function getFloor(text) {
+		if(text.indexOf("нулевому") != -1 || text.indexOf("нулевой") != -1){
+			SwitchLevel('zero-floor');
+		}
+		else if(text.indexOf("первому") != -1 || text.indexOf("первый") != -1){
+			SwitchLevel('first-floor');
+		}
+		else if(text.indexOf("второму") != -1 || text.indexOf("второй") != -1){
+			SwitchLevel('second-floor');
+		}
+		else if(text.indexOf("третьему") != -1 || text.indexOf("третий") != -1){
+			SwitchLevel('third-floor');
+		}
+		else if(text.indexOf("четвертому") != -1 || text.indexOf("четвертый") != -1){
+			SwitchLevel('fourth-floor');
+		}
+		
+	}
+	//$("document").on('click', '.routeBtn', function() {getFloor(text)})
+	$(".way-details-text").append(`<span>${text}`)
+	$(".way-details-text").append(`<br/>`)
+	} 
+
 	// wayfinding
 	function Wayfinding() {
 		this.waypoints = [];
@@ -36,6 +123,8 @@ jQuery(document).ready(function($) {
 		this.toselect = null;
 		this.submit = null;
 		this.timeouts = [];
+
+		this.endPoints = [];
 
 		this.o = {
 			opened: true,
@@ -69,10 +158,14 @@ jQuery(document).ready(function($) {
 			this.el = $('<div></div>').addClass('mapplic-routes-panel');
 			if (self.o.fullscreen) this.el.css('top', '40px');
 
+			// detais
+			this.waydetails = $('<div></div>').addClass('mapplic-routes-details-panel').appendTo(this.el);
+			this.waydetailstext = $('<div></div>').addClass('way-details-text').appendTo(this.waydetails);
+
 			this.fromselect = $('<div></div').addClass('mapplic-routes-select').appendTo(this.el);
 			$('<small></small>').appendTo(this.fromselect);
 			$('<div></div>').appendTo(this.fromselect);
-			$('<span></span>').text('Select location').appendTo(this.fromselect);
+			$('<span></span>').text('Выберите начальный кабинет').appendTo(this.fromselect);
 
 			// dots
 			var dots = $('<div></div>').addClass('mapplic-routes-dots').appendTo(this.el);
@@ -104,7 +197,7 @@ jQuery(document).ready(function($) {
 			this.toselect = $('<div></div>').addClass('mapplic-routes-select').appendTo(this.el);
 			$('<small></small>').appendTo(this.toselect);
 			$('<div></div').appendTo(this.toselect);
-			$('<span></span>').text('Select location').appendTo(this.toselect);
+			$('<span></span>').text('Выберите конечный кабинет').appendTo(this.toselect);
 
 
 			$(document).on('click', '.mapplic-routes-select:not(.fixed)', function() {
@@ -136,24 +229,12 @@ jQuery(document).ready(function($) {
 			});
 
 			// hide panel
-			this.close = $('<div></div>').text('Hide').addClass('mapplic-routes-close').appendTo(this.el);
+			this.close = $('<div></div>').text('Скрыть').addClass('mapplic-routes-close').appendTo(this.el);
 			this.close.on('click touchstart', function() {
 				s.clear();
 
 				s.hidePanel(s);
 			});
-
-			// accessible
-			if (this.o.accessible) {
-				this.wheelchair = $('<button></button>').addClass('mapplic-routes-wheelchair').appendTo(this.el);
-				this.wheelchair.on('click touchstart', function(e) {
-					e.preventDefault();
-					s.o.disability = !s.o.disability;
-					$(this).toggleClass('enabled', s.o.disability);
-				});
-
-				if (this.o.disability) this.wheelchair.addClass('enabled');
-			}
 
 			// icon
 			$(document).on('click touchstart', '.mapplic-routes-icon', function() {
@@ -187,10 +268,13 @@ jQuery(document).ready(function($) {
 				else {
 					s.setLoc(location, false);
 
-					// content icon
 					if ($('.mapplic-tooltip-body', content).length) content = $('.mapplic-tooltip-body', content);
 					if ($('.mapplic-routes-icon', content).length) $('.mapplic-routes-icon', content).attr('data-location', location.id);
-					else $('<div></div>').addClass('mapplic-routes-icon').attr('data-location', location.id).appendTo(content);
+					else
+					{
+	
+						$('<div></div>').addClass('mapplic-routes-icon').attr('data-location', location.id).appendTo(content);
+					}
 				}
 
 			});
@@ -292,8 +376,6 @@ jQuery(document).ready(function($) {
 						break;
 					default:
 						console.error('Invalid element in routes: ' + this.tagName + '. Valid types are line, polyline and polygon.');
-						console.error(this);
-						console.error(id);
 				}
 			});
 
@@ -372,12 +454,28 @@ jQuery(document).ready(function($) {
 				}
 			}
 
+			this.endPoints = Array.from(document.getElementsByClassName('mapplic-routes-loc')).map(v => v.innerText)
+
 			// last or only floor
 			this.showSubPath(path.slice(start, path.length), path[path.length - 1].dist - dist, dist, path[start].fid);
+
+			let s = this
+
+			childs = $(".way-details-text");
+			childs.empty();
+
+			WayDetailsShowing(s.endPoints[0]);
+			var t = setTimeout(function() {
+				WayDetailsShowing(s.endPoints[1]);
+				FirstTimeCall = true;
+				isWayDrawning = false;
+			}, dist * 10 / this.o.speed + this.timeouts.length * 600); // delay between floors
+			this.timeouts.push(t);
 		}
 
 		this.showSubPath = function(subpath, dist, dur, fid) {
 			var s = this;
+
 			var t = setTimeout(function() {
 				// switch level, zoom and draw
 				self.switchLevel(fid);
@@ -386,11 +484,12 @@ jQuery(document).ready(function($) {
 				self.bboxZoom(path);
 			}, dur * 10 / s.o.speed + s.timeouts.length * 600); // delay between floors
 			s.timeouts.push(t);
+
+			isWayDrawning = true;
 		}
 
 		this.addListIcon = function(id) {
 			$('<div></div>').addClass('mapplic-routes-icon').attr('data-location', id).appendTo($('.mapplic-list-location[data-location=' + id + ']', self.el));
-			console.log(id);
 		}
 
 		this.bboxZoom = function(bbox) {

@@ -73,16 +73,16 @@
 		};
 
 		self.loc = {
-			more: 'More',
-			search: 'Search',
-			zoomin: 'Zoom in',
-			zoomout: 'Zoom out',
-			resetzoom: 'Reset zoom',
-			levelup: 'Level up',
-			leveldown: 'Level down',
-			clearsearch: 'Clear search',
-			closepopup: 'Close popup',
-			clearfilter: 'Clear filter',
+			more: 'Подробнее',
+			search: 'Поиск',
+			zoomin: 'Приблизить',
+			zoomout: 'Отдалить',
+			resetzoom: 'Обнулить приближение',
+			levelup: 'Этаж вверх',
+			leveldown: 'Этаж вниз',
+			clearsearch: 'Очистить поиск',
+			closepopup: 'Закрыть окно',
+			clearfilter: 'Очистить фильтр',
 			iconfile: 'mapplic/images/icons.svg'
 		}
 
@@ -1043,7 +1043,6 @@
 
 				if (self.o.search) {
 					this.header = $('<div></div>').addClass('mapplic-sidebar-header').append(getIcon('icon-magnifier')).appendTo(this.el);
-					this.clear = $('<button></button>').addClass('mapplic-search-clear').append(getIcon('icon-cross')).appendTo(this.header);
 					this.headerwrap = $('<div></div>').appendTo(this.header);
 
 					this.input = $('<input>').attr({'type': 'text', 'spellcheck': 'false', 'placeholder': self.loc.search}).addClass('mapplic-search-input').keyup(function(e) {
@@ -1070,29 +1069,9 @@
 					this.input.appendTo(this.headerwrap);
 
 					// clear search
-					this.clear.on('click touchstart', function(e) {
-						e.preventDefault();
-						s.input.val('');
-						s.tags.empty();
-						if (s.tags.children().length < 1) s.el.removeClass('mapplic-sidebar-tagsrow');
-						self.directory.filters = {};
-
-						s.search();
-					});
-
-					this.toggle = $('<button></button>').append(getIcon('icon-filter')).addClass('mapplic-search-toggle').click(function(e) {
-						e.preventDefault();
-						s.el.toggleClass('mapplic-sidebar-header-opened');
-					}).appendTo(this.headerwrap);
 
 					// tags
 					this.tags = $('<div></div>').addClass('mapplic-filter-tags').appendTo(this.headerwrap);
-
-					// filters
-					this.filter = $('<div></div>').addClass('mapplic-filter').appendTo(this.header);
-
-					// dim
-					this.dim = $('<div></div>').addClass('mapplic-sidebar-dim').click(function() { s.el.removeClass('mapplic-sidebar-header-opened'); }).appendTo(this.el);
 				}
 				else this.el.addClass('mapplic-sidebar-nosearch');
 
