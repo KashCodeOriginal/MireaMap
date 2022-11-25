@@ -1,14 +1,8 @@
-/*
- * Mapplic Routes - Wayfinding extension by @sekler
- * Version 3.0
- * https://www.mapplic.com/routes
- */
-
 jQuery(document).ready(function($) {
+
 	var map = $('.mapplic-routes'),
 		self = map.data('mapplic'),
 		wayfinding = null;
-
 	var buildFloors = function() {
 		wayfinding = new Wayfinding().init();
 		map.on('svgloaded', function(e, svg, id) {
@@ -16,6 +10,7 @@ jQuery(document).ready(function($) {
 		});
 	}
 
+	
 	if (self) buildFloors();
 	else {
 		map.on('mapstart', function(e, s) {
@@ -28,16 +23,15 @@ jQuery(document).ready(function($) {
 	var FirstTimeCall = true;
 	var childs = [];
 
-	// map.on('mapready', function(e, self) {
-	// 	navigator.geolocation.getCurrentPosition(function(pos) 
-	// 	{
-	// 		var location = self.getLocationData('pos');
-	// 		location.lat = pos.coords.latitude;
-	// 		location.lng = pos.coords.longitude;
-	// 		self.updateLocation('pos');
-	// 	})
-	// });
-	
+	map.on('mapready', function(e, self) {
+		navigator.geolocation.getCurrentPosition(function(pos) 
+		{
+			var location = self.getLocationData('pos');
+			location.lat = pos.coords.latitude;
+			location.lng = pos.coords.longitude;
+			self.updateLocation('pos');
+		})
+	});
 	map.on('levelswitched', function(e, level) {
 		if(isWayDrawning){
 			switch(level)
@@ -119,6 +113,8 @@ jQuery(document).ready(function($) {
 		this.el = null;
 		this.close = null;
 		this.wheelchair = null;
+		this.waydetails = null;
+		this.waydetailstext = null;
 		this.fromselect = null;
 		this.toselect = null;
 		this.submit = null;
@@ -134,7 +130,7 @@ jQuery(document).ready(function($) {
 			floordist: 20,
 			smoothing: 5,
 			linecolor: '#f23543',
-			linewidth: 2,
+			linewidth: 1.5,
 			speed: 1
 		};
 
@@ -161,11 +157,11 @@ jQuery(document).ready(function($) {
 			// detais
 			this.waydetails = $('<div></div>').addClass('mapplic-routes-details-panel').appendTo(this.el);
 			this.waydetailstext = $('<div></div>').addClass('way-details-text').appendTo(this.waydetails);
-
+			
 			this.fromselect = $('<div></div').addClass('mapplic-routes-select').appendTo(this.el);
 			$('<small></small>').appendTo(this.fromselect);
 			$('<div></div>').appendTo(this.fromselect);
-			$('<span></span>').text('Выберите начальный кабинет').appendTo(this.fromselect);
+			$('<span></span>').text('Выберите начальную точку').appendTo(this.fromselect);
 
 			// dots
 			var dots = $('<div></div>').addClass('mapplic-routes-dots').appendTo(this.el);
@@ -197,7 +193,7 @@ jQuery(document).ready(function($) {
 			this.toselect = $('<div></div>').addClass('mapplic-routes-select').appendTo(this.el);
 			$('<small></small>').appendTo(this.toselect);
 			$('<div></div').appendTo(this.toselect);
-			$('<span></span>').text('Выберите конечный кабинет').appendTo(this.toselect);
+			$('<span></span>').text('Выберите конечную точку').appendTo(this.toselect);
 
 
 			$(document).on('click', '.mapplic-routes-select:not(.fixed)', function() {
@@ -211,7 +207,7 @@ jQuery(document).ready(function($) {
 				$(this).parent('.mapplic-routes-select.filled').removeClass('filled');
 			});
 
-			this.submit = $('<button></button>').addClass('mapplic-routes-submit').attr('type', 'submit').appendTo(this.el);
+			this.submit = $('<button></button>').addClass('mapplic-routes-submit').appendTo(this.el);
 			this.submit.on('click touchstart', function(e) {
 				e.preventDefault();
 
@@ -235,6 +231,18 @@ jQuery(document).ready(function($) {
 
 				s.hidePanel(s);
 			});
+
+			// accessible
+			if (this.o.accessible) {
+				this.wheelchair = $('<button></button>').addClass('mapplic-routes-wheelchair').appendTo(this.el);
+				this.wheelchair.on('click touchstart', function(e) {
+					e.preventDefault();
+					s.o.disability = !s.o.disability;
+					$(this).toggleClass('enabled', s.o.disability);
+				});
+
+				if (this.o.disability) this.wheelchair.addClass('enabled');
+			}
 
 			// icon
 			$(document).on('click touchstart', '.mapplic-routes-icon', function() {
@@ -268,13 +276,10 @@ jQuery(document).ready(function($) {
 				else {
 					s.setLoc(location, false);
 
+					// content icon
 					if ($('.mapplic-tooltip-body', content).length) content = $('.mapplic-tooltip-body', content);
 					if ($('.mapplic-routes-icon', content).length) $('.mapplic-routes-icon', content).attr('data-location', location.id);
-					else
-					{
-	
-						$('<div></div>').addClass('mapplic-routes-icon').attr('data-location', location.id).appendTo(content);
-					}
+					else $('<div></div>').addClass('mapplic-routes-icon').attr('data-location', location.id).appendTo(content);
 				}
 
 			});
@@ -284,6 +289,8 @@ jQuery(document).ready(function($) {
 
 			return this.el;
 		}
+
+
 
 		// set location
 		this.setLoc = function(location, target) {
@@ -431,7 +438,7 @@ jQuery(document).ready(function($) {
 		this.showPath = function(a, b) {
 			var wpa = this.getPoints(a),
 				wpb = this.getPoints(b);
-
+				
 			if (!wpa || !wpb) return false;
 
 			var path = this.shortestPath(wpa, wpb),
@@ -455,14 +462,18 @@ jQuery(document).ready(function($) {
 			}
 
 			this.endPoints = Array.from(document.getElementsByClassName('mapplic-routes-loc')).map(v => v.innerText)
-
 			// last or only floor
-			this.showSubPath(path.slice(start, path.length), path[path.length - 1].dist - dist, dist, path[start].fid);
+			this.showSubPath(
+				path.slice(start,path.length), 
+				path[path.length - 1].dist - dist, 
+				dist, 
+				path[start].fid);
 
 			let s = this
 
 			childs = $(".way-details-text");
 			childs.empty();
+
 
 			WayDetailsShowing(s.endPoints[0]);
 			var t = setTimeout(function() {
@@ -471,21 +482,24 @@ jQuery(document).ready(function($) {
 				isWayDrawning = false;
 			}, dist * 10 / this.o.speed + this.timeouts.length * 600); // delay between floors
 			this.timeouts.push(t);
+
+
+			
 		}
+
 
 		this.showSubPath = function(subpath, dist, dur, fid) {
 			var s = this;
-
 			var t = setTimeout(function() {
 				// switch level, zoom and draw
 				self.switchLevel(fid);
 				var path = s.drawPath(subpath, dist);
-
 				self.bboxZoom(path);
 			}, dur * 10 / s.o.speed + s.timeouts.length * 600); // delay between floors
 			s.timeouts.push(t);
 
 			isWayDrawning = true;
+			
 		}
 
 		this.addListIcon = function(id) {
@@ -522,9 +536,10 @@ jQuery(document).ready(function($) {
 				y: parseFloat(a.y) + ylen * r
 			}
 		}
-
 		// the route
 		this.drawPath = function(list, dist) {
+
+
 			var d = 'M ' + list[0].x + ',' + list[0].y;
 
 			for (var i = 0; i < list.length; i++) {
@@ -554,6 +569,7 @@ jQuery(document).ready(function($) {
 			p.getBoundingClientRect();
 			p.style.transition = p.style.WebkitTransition = 'stroke-dashoffset ' + dist / 100 / this.o.speed + 's ease-in-out 0.4s'; // 400ms delay
 			p.style.strokeDashoffset = '0';
+			//debugger;
 
 			return this.path;
 		}

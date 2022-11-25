@@ -1,6 +1,6 @@
 /*
  * Mapplic - Custom Interactive Map Plugin by @sekler
- * Version 7.1.2
+ * Version 7.0.1
  * https://www.mapplic.com/
  */
 
@@ -73,20 +73,21 @@
 		};
 
 		self.loc = {
-			more: 'Подробнее',
-			search: 'Поиск',
-			zoomin: 'Приблизить',
-			zoomout: 'Отдалить',
-			resetzoom: 'Обнулить приближение',
-			levelup: 'Этаж вверх',
-			leveldown: 'Этаж вниз',
-			clearsearch: 'Очистить поиск',
-			closepopup: 'Закрыть окно',
-			clearfilter: 'Очистить фильтр',
+			more: 'More',
+			search: 'Search',
+			zoomin: 'Zoom in',
+			zoomout: 'Zoom out',
+			resetzoom: 'Reset zoom',
+			levelup: 'Level up',
+			leveldown: 'Level down',
+			clearsearch: 'Clear search',
+			closepopup: 'Close popup',
+			clearfilter: 'Clear filter',
 			iconfile: 'mapplic/images/icons.svg'
 		}
 
 		self.el = element;
+
 
 		self.init = function(options) {
 
@@ -97,8 +98,7 @@
 
 			self.el.addClass('mapplic-element mapplic-loading');
 
-			// trigger event
-			self.el.trigger('mapload', self);
+
 			
 			// scope
 			if (self.o.scope) self.scope = $(self.o.scope);
@@ -131,6 +131,8 @@
 
 			return self;
 		}
+
+		
 
 		// tooltip
 		function Tooltip() {
@@ -372,10 +374,7 @@
 			this.show = function(location) {
 				if (self.location != location) {
 					this.title.text(location.title);
-					if (self.o.hovertipdesc) {
-						if (location.description) this.desc.html(location.description);
-						else this.desc.empty();
-					}
+					if (self.o.hovertipdesc) this.desc.html(location.description);
 					this.position(location);
 
 					this.el.stop().fadeIn(100);
@@ -474,7 +473,6 @@
 
 			this.hide = function() {
 				this.location = null;
-				this.desc.empty();
 				self.hideLocation();
 				if (!self.o.zoom || self.o.zoomoutclose) self.moveTo(0.5, 0.5, self.fitscale, 400);
 			}
@@ -696,7 +694,7 @@
 					else { // multi-group support
 						var groups = attr.split(','),
 							show = false;
-						groups.forEach(function(g) { if ($('.mapplic-toggle > input[data-group="' + g + '"]')[0] && $('.mapplic-toggle > input[data-group="' + g + '"]')[0].checked) show = true; });
+						groups.forEach(function(g) { if ($('.mapplic-toggle > input[data-group="' + g + '"]')[0].checked) show = true; });
 						$(this).toggle(show);
 					}
 				});
@@ -712,7 +710,6 @@
 					var circle = $('<span></span>').addClass('mapplic-toggle-circle').appendTo(toggle);
 					if (title) $('<span></span>').addClass('mapplic-legend-label').text(group.title).appendTo(toggle);
 					if (group.switchoff == 'true') input.prop('checked', false);
-					if (group.color) circle.css('background-color', group.color);
 					
 					input.change(function() {
 						$('.mapplic-toggle > input[data-group="' + group.id + '"]', self.el).prop('checked', this.checked);
@@ -853,9 +850,6 @@
 
 				this.dirs.push(dir);
 
-				// trigger event
-				self.el.trigger('dirready', dir);
-
 				return dir;
 			}
 
@@ -962,7 +956,7 @@
 			}
 
 			this.normalizeString = function(s) {
-				if (s) return s.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+				if (s) return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
 				else return '';
 			}
 
@@ -996,7 +990,6 @@
 		function Sidebar() {
 			this.el = null;
 			this.header = null;
-			this.clear = null;
 			this.input = null;
 			this.list = null;
 			this.tags = null;
@@ -1042,7 +1035,7 @@
 				}
 
 				if (self.o.search) {
-					this.header = $('<div></div>').addClass('mapplic-sidebar-header').append(getIcon('icon-magnifier')).appendTo(this.el);
+					this.header = $('<div></div>').addClass('mapplic-sidebar-header').append(getIcon('icon-magnifier')).appendTo(this.el)
 					this.headerwrap = $('<div></div>').appendTo(this.header);
 
 					this.input = $('<input>').attr({'type': 'text', 'spellcheck': 'false', 'placeholder': self.loc.search}).addClass('mapplic-search-input').keyup(function(e) {
@@ -1068,10 +1061,19 @@
 
 					this.input.appendTo(this.headerwrap);
 
-					// clear search
+					this.toggle = $('<button></button>').append(getIcon('icon-filter')).addClass('mapplic-search-toggle').click(function(e) {
+						e.preventDefault();
+						s.el.toggleClass('mapplic-sidebar-header-opened');
+					}).appendTo(this.headerwrap);
 
 					// tags
 					this.tags = $('<div></div>').addClass('mapplic-filter-tags').appendTo(this.headerwrap);
+
+					// filters
+					this.filter = $('<div></div>').addClass('mapplic-filter').appendTo(this.header);
+
+					// dim
+					this.dim = $('<div></div>').addClass('mapplic-sidebar-dim').click(function() { s.el.removeClass('mapplic-sidebar-header-opened'); }).appendTo(this.el);
 				}
 				else this.el.addClass('mapplic-sidebar-nosearch');
 
@@ -1225,9 +1227,7 @@
 
 				if (!$.isEmptyObject(self.directory.filters)) {
 					if (self.o.highlight) self.map.addClass('mapplic-filtered');
-					self.el.addClass('mapplic-search-active');
 				}
-				else self.el.removeClass('mapplic-search-active');
 			}
 		}
 
@@ -1969,29 +1969,27 @@
 			// separate location array
 			self.addLocations(self.data.locations);
 
+			// trigger event
+			self.el.trigger('mapready', self);
+
 			// apply toggle
 			self.legend.applyToggles();
 
 			// CSV support
 			if (self.o.csv) { 
-				if (typeof Papa === 'undefined') {
-					console.warn('CSV parser missing. Please make sure the library is loaded.');
-				}
-				else {
-					Papa.parse(self.o.csv, {
-						header: true,
-						download: true,
-						encoding: "UTF-8",
-						skipEmptyLines: true,
-						complete: function(results, file) {
-							self.addLocations(results.data);
-							$('.mapplic-pin', self.map).css({ 'transform': 'scale(' + 1/self.scale + ')' });
-							if (self.deeplinking) self.deeplinking.check(0);
+				Papa.parse(self.o.csv, {
+					header: true,
+					download: true,
+					encoding: "UTF-8",
+					skipEmptyLines: true,
+					complete: function(results, file) {
+						self.addLocations(results.data);
+						$('.mapplic-pin', self.map).css({ 'transform': 'scale(' + 1/self.scale + ')' });
+						if (self.deeplinking) self.deeplinking.check(0);
 
-							self.el.trigger('csvready', self);
-						}
-					});
-				}
+						self.el.trigger('csvready', self);
+					}
+				});
 			}
 
 			self.container.resetZoom();
@@ -2006,9 +2004,6 @@
 				self.o.deeplinking = false;
 				self.showLocation(self.o.landmark, 0, true);
 			}
-
-			// trigger event
-			self.el.trigger('mapready', self);
 		}
 
 		/* PRIVATE METHODS */
@@ -2160,30 +2155,26 @@
 			if (layer.hasClass('mapplic-visible')) return;
 
 			// show target layer
-			layer.removeClass('mapplic-hidden');
+			var old = $('.mapplic-layer.mapplic-visible', self.map).removeClass('mapplic-visible');
+			
+			clearTimeout(levelTimeout);
+			levelTimeout = setTimeout(function() { 
+				$('.mapplic-layer:not([data-floor="' + target + '"])', self.map).addClass('mapplic-hidden');
+			}, 300);
+			layer.removeClass('mapplic-hidden').addClass('mapplic-visible');
 
-			setTimeout(function() {
-				var old = $('.mapplic-layer.mapplic-visible', self.map).removeClass('mapplic-visible');
-				layer.addClass('mapplic-visible');
-				
-				clearTimeout(levelTimeout);
-				levelTimeout = setTimeout(function() { 
-					$('.mapplic-layer:not([data-floor="' + target + '"])', self.map).addClass('mapplic-hidden');
-				}, 300);
-
-				// slide animation
-				if (self.o.animations) {
-					var found = false;
-					$('.mapplic-layer', self.map).each(function() {
-						if ($(this).data('floor') == target) {
-							$(this).removeClass('mapplic-layer-up').removeClass('mapplic-layer-down');
-							found = true;
-						}
-						else if (found) $(this).addClass('mapplic-layer-up');
-						else $(this).addClass('mapplic-layer-down');
-					});
-				}
-			}, 1);
+			// slide animation
+			if (self.o.animations) {
+				var found = false;
+				$('.mapplic-layer', self.map).each(function() {
+					if ($(this).data('floor') == target) {
+						$(this).removeClass('mapplic-layer-up').removeClass('mapplic-layer-down');
+						found = true;
+					}
+					else if (found) $(this).addClass('mapplic-layer-up');
+					else $(this).addClass('mapplic-layer-down');
+				});
+			}
 
 			// show target minimap layer
 			if (self.minimap) self.minimap.show(target);
@@ -2337,9 +2328,7 @@
 			var marker = $('<a></a>').addClass('mapplic-pin').addClass(location.pin.replace('hidden', '')).attr('aria-label', location.title + ' marker').css({'top': (location.y * 100) + '%', 'left': (location.x * 100) + '%'}).appendTo(parent);
 			marker.on('click touchend', function(e) {
 				if (e.cancelable) e.preventDefault();
-
-				var shift = Math.abs(self.firstcoord.x - self.lastcoord.x) + Math.abs(self.firstcoord.y - self.lastcoord.y);
-				if (!self.dragging || shift < 4) self.showLocation(location.id, 600);
+				if (!self.dragging) self.showLocation(location.id, 600);
 			});
 
 			if (location.label) {
@@ -2364,9 +2353,9 @@
 
 		// removing locations
 		self.removeLocations = function() {
-			$.each(self.l, function(i, location) {
-				self.removeLocation(location.id);
-			});
+			for (var key of Object.keys(self.l)) {
+				self.removeLocation(key);
+			}
 		}
 
 		self.removeLocation = function(location) {
@@ -2386,11 +2375,11 @@
 			var location = self.location = self.l[id];
 			if (!location) return false;
 
-			// trigger event
-			self.el.trigger('locationopen', location);
-
 			var action = (location.action && location.action != 'default') ? location.action : self.o.action;
 			if (action == 'disabled') return false;
+
+			// trigger event
+			self.el.trigger('locationopen', location);
 
 			var content = null;
 			self.closeTooltips();
@@ -2448,7 +2437,7 @@
 				default:
 					self.hideLocation();
 					self.switchLevel(location.level);
-					setTimeout(function() { content = self.addTooltip(location, check); }, 2);
+					content = self.addTooltip(location, check);
 			}
 
 			self.location = self.l[id];
