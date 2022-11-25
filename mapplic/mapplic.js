@@ -73,16 +73,16 @@
 		};
 
 		self.loc = {
-			more: 'More',
-			search: 'Search',
-			zoomin: 'Zoom in',
-			zoomout: 'Zoom out',
-			resetzoom: 'Reset zoom',
-			levelup: 'Level up',
-			leveldown: 'Level down',
-			clearsearch: 'Clear search',
-			closepopup: 'Close popup',
-			clearfilter: 'Clear filter',
+			more: 'Подробнее',
+			search: 'Поиск',
+			zoomin: 'Приблизить',
+			zoomout: 'Отдалить',
+			resetzoom: 'Обнулить приближение',
+			levelup: 'Этаж вверх',
+			leveldown: 'Этаж вниз',
+			clearsearch: 'Очистить поиск',
+			closepopup: 'Закрыть окно',
+			clearfilter: 'Очистить фильтр',
 			iconfile: 'mapplic/images/icons.svg'
 		}
 
