@@ -3,7 +3,7 @@ html {
 }
 
 body {
-	background-color: #fff;
+	background-color: #E9F8DD;
 	color: #666;
 	font-family: 'Open Sans', sans-serif;
 	font-size: 14px;
@@ -96,9 +96,8 @@ ul p {
 
 /* Header */
 #header {
-	background-image: url(../images/pattern-topo.png);
-	box-shadow: 0 -40px 80px #fff inset;
-	background-color: #f8f8f8;
+	box-shadow: 0 -40px 80px #E9F8DD inset;
+	background-color: #E9F8DD;
 	padding: 40px 30px 100px 30px;
 }
 

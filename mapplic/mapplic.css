@@ -1107,10 +1107,10 @@ input.mapplic-search-input:focus {
 }
 
 .mapplic-thumbnail-placeholder {
-	background-color: #eee;
+	background-color: #ccc;
 	box-sizing: border-box;
 	color: #fff;
-	font-size: 20px;
+	font-size: 14px;
 	font-weight: 600;
 	line-height: 34px;
 	padding: 8px 4px;

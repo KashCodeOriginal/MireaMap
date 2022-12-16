@@ -35,7 +35,7 @@
 			marker: '',
 			developer: false,
 			smartip: false,
-			animations: false,
+			animations: true,
 			hovertipdesc: false,
 
 			// sidebar

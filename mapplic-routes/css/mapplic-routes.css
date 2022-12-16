@@ -306,6 +306,7 @@
 
 /* Accessible */
 .mapplic-routes .mapplic-routes-wheelchair {
+	display: none;
 	background-color: transparent;
 	background-image: url(../img/wheelchair.svg);
 	background-repeat: no-repeat;
